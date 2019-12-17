@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Best Reads</string>
+
+    <!--Error Messages-->
+    <string name="network_unavailable_message">Network not available!</string>
+    <string name="data_not_available">Data not available</string>
+    <string name="no_response_from_server">No response from server.</string>
+    <string name="description_not_found">Description Not Found.</string>
+    <string name="amazon_link_not_found">Amazon Link Not Found.</string>
+    <string name="rating_not_found">Rating Not Found.</string>
+
 </resources>
