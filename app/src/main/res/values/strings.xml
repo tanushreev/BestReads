@@ -12,4 +12,16 @@
     <!--Content Descriptions-->
     <string name="content_description_book_cover">Book cover</string>
 
+    <!--Main menu-->
+    <string name="main_menu_hardcover_fiction">Hardcover Fiction</string>
+    <string name="main_menu_paperback_fiction">Paperback Fiction</string>
+    <string name="main_menu_hardcover_nonfiction">Hardcover Nonfiction</string>
+    <string name="main_menu_paperback_nonfiction">Paperback Nonfiction</string>
+    <string name="main_menu_hardcover_advice">Hardcover Advice and Misc.</string>
+    <string name="main_menu_paperback_advice">Paperback Advice and Misc.</string>
+    <string name="main_menu_business">Business</string>
+    <string name="main_menu_science">Science</string>
+    <string name="main_menu_children_books">Children’s Picture Books</string>
+    <string name="main_menu_wish_list">Wish List</string>
+
 </resources>

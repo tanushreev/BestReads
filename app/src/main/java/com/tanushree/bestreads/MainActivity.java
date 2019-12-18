@@ -11,10 +11,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.tanushree.bestreads.model.Book;
@@ -30,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String ITEM_POSITION_EXTRA = "item_position";
 
     private static final String categoryHardcoverFiction = "hardcover-fiction";
+    private static final String categoryPaperbackFiction = "trade-fiction-paperback";
+    private static final String categoryHardcoverNonfiction = "hardcover-nonfiction";
+    private static final String categoryPaperbackNonfiction = "paperback-nonfiction";
+    private static final String categoryHardcoverAdvice = "hardcover-advice";
+    private static final String categoryPaperbackAdvice = "paperback-advice";
+    private static final String categoryBusiness = "business-books";
+    private static final String categoryScience = "science";
+    private static final String categoryChildrenBooks = "picture-books";
+    private static final String categoryWishList = "wish-list";
 
     public static final String KEY_JSON = "json_string";
     public static final String KEY_CATEGORY = "books_category";
@@ -77,25 +90,32 @@ public class MainActivity extends AppCompatActivity {
     private void loadBooksData() {
         //Log.d (TAG, "loadBooksData called");
 
-        if (isNetworkAvailable()) {
+        setTheTitle();
 
-            // Create a Retrofit object.
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+        if (mCategory.equals(categoryWishList)) {
 
-            NyTimesClientAPI nyTimesClientAPI = retrofit.create(NyTimesClientAPI.class);
+        }
 
-            Call<JSONData> call = nyTimesClientAPI.getData(mCategory, api_key);
+        else {
+            if (isNetworkAvailable()) {
 
-            call.enqueue(new Callback<JSONData>() {
-                @Override
-                public void onResponse(Call<JSONData> call, Response<JSONData> response) {
-                    //Log.d(TAG, "onResponse: Server Response: " + response.toString());
-                    //Log.d(TAG, "onResponse: received information: " + response.body().toString());
+                // Create a Retrofit object.
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-                    ArrayList<Book> bookList = response.body().getResults().getBooks();
+                NyTimesClientAPI nyTimesClientAPI = retrofit.create(NyTimesClientAPI.class);
+
+                Call<JSONData> call = nyTimesClientAPI.getData(mCategory, api_key);
+
+                call.enqueue(new Callback<JSONData>() {
+                    @Override
+                    public void onResponse(Call<JSONData> call, Response<JSONData> response) {
+                        //Log.d(TAG, "onResponse: Server Response: " + response.toString());
+                        //Log.d(TAG, "onResponse: received information: " + response.body().toString());
+
+                        ArrayList<Book> bookList = response.body().getResults().getBooks();
 
                     /*for (int i = 0; i < bookList.size(); i++) {
                         Log.d(TAG, "onResponse: \n" +
@@ -107,23 +127,170 @@ public class MainActivity extends AppCompatActivity {
                                 "--------------------------------------------------------\n\n");
                         }*/
 
-                    mBooksAdapter.setBooksData(bookList);
+                        mBooksAdapter.setBooksData(bookList);
 
-                    // Restore RecyclerView Scroll Position.
-                    // Note: Must be called AFTER the adapter data has been set.
-                    mBooksRv.getLayoutManager().scrollToPosition(mFirstVisibleItemPosition);
-                }
+                        // Restore RecyclerView Scroll Position.
+                        // Note: Must be called AFTER the adapter data has been set.
+                        mBooksRv.getLayoutManager().scrollToPosition(mFirstVisibleItemPosition);
+                    }
 
-                @Override
-                public void onFailure(Call<JSONData> call, Throwable t) {
-                    //Log.e(TAG, "onFailure: Something went wrong: " + t.getMessage());
-                    Toast.makeText(MainActivity.this, R.string.no_response_from_server,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText
-                    (this, R.string.network_unavailable_message, Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onFailure(Call<JSONData> call, Throwable t) {
+                        //Log.e(TAG, "onFailure: Something went wrong: " + t.getMessage());
+                        Toast.makeText(MainActivity.this, R.string.no_response_from_server,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText
+                        (this, R.string.network_unavailable_message, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void setTheTitle ()
+    {
+        //Log.d (TAG, "setTheTitle called");
+        //SharedPreferences.Editor editor = mSharedPreferences.edit();
+        switch(mCategory)
+        {
+            case categoryHardcoverFiction:
+                setTitle(R.string.main_menu_hardcover_fiction);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_fiction));
+                break;
+
+            case categoryPaperbackFiction:
+                setTitle(R.string.main_menu_paperback_fiction);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_fiction));
+                break;
+
+            case categoryHardcoverNonfiction:
+                setTitle(R.string.main_menu_hardcover_nonfiction);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_nonfiction));
+                break;
+
+            case categoryPaperbackNonfiction:
+                setTitle(R.string.main_menu_paperback_nonfiction);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_nonfiction));
+                break;
+
+            case categoryHardcoverAdvice:
+                setTitle(R.string.main_menu_hardcover_advice);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_advice));
+                break;
+
+            case categoryPaperbackAdvice:
+                setTitle(R.string.main_menu_paperback_advice);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_advice));
+                break;
+
+            case categoryBusiness:
+                setTitle(R.string.main_menu_business);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_business));
+                break;
+
+            case categoryScience:
+                setTitle(R.string.main_menu_science);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_science));
+                break;
+
+            case categoryChildrenBooks:
+                setTitle(R.string.main_menu_children_books);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_children_books));
+                break;
+
+            case categoryWishList:
+                setTitle(R.string.main_menu_wish_list);
+                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_wish_list));
+                break;
+
+            default:
+                setTitle("Best Reads");
+                //editor.putString(KEY_CATEGORY, getString(R.string.app_name));
+        }
+        //editor.apply();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        //Log.d (TAG, "OnOptionsItemSelected called");
+
+        mFirstVisibleItemPosition = 0;
+
+        int id = item.getItemId();
+
+        switch(id)
+        {
+            case R.id.action_hardcoverFiction:
+                mCategory = categoryHardcoverFiction;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_paperbackFiction:
+                mCategory = categoryPaperbackFiction;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_hardcoverNonfiction:
+                mCategory = categoryHardcoverNonfiction;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_paperbackNonfiction:
+                mCategory = categoryPaperbackNonfiction;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_hardcoverAdvice:
+                mCategory = categoryHardcoverAdvice;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_paperbackAdvice:
+                mCategory = categoryPaperbackAdvice;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_business:
+                mCategory = categoryBusiness;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_science:
+                mCategory = categoryScience;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_childrenBooks:
+                mCategory = categoryChildrenBooks;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            case R.id.action_wishList:
+                mCategory = categoryWishList;
+                mBooksAdapter.setBooksData(null);
+                loadBooksData();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

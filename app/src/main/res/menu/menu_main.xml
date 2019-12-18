@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/main_menu_hardcover_fiction"
+        android:id="@+id/action_hardcoverFiction"
+        />
+
+    <item android:title="@string/main_menu_paperback_fiction"
+        android:id="@+id/action_paperbackFiction"
+        />
+
+    <item android:title="@string/main_menu_hardcover_nonfiction"
+        android:id="@+id/action_hardcoverNonfiction"
+        />
+
+    <item android:title="@string/main_menu_paperback_nonfiction"
+        android:id="@+id/action_paperbackNonfiction"
+        />
+
+    <item android:title="@string/main_menu_hardcover_advice"
+        android:id="@+id/action_hardcoverAdvice"
+        />
+
+    <item android:title="@string/main_menu_paperback_advice"
+        android:id="@+id/action_paperbackAdvice"
+        />
+
+    <item android:title="@string/main_menu_business"
+        android:id="@+id/action_business"
+        />
+
+    <item android:title="@string/main_menu_science"
+        android:id="@+id/action_science"
+        />
+
+    <item android:title="@string/main_menu_children_books"
+        android:id="@+id/action_childrenBooks"
+        />
+
+    <item android:title="@string/main_menu_wish_list"
+        android:id="@+id/action_wishList"
+        />
+
+</menu>
