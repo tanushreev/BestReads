@@ -11,6 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,12 +22,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.tanushree.bestreads.BooksAdapter.BooksAdapterOnClickHandler;
 import com.tanushree.bestreads.model.Book;
 import com.tanushree.bestreads.model.JSONData;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BooksAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_URL = "https://api.nytimes.com/svc/books/v3/lists/";
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String KEY_JSON = "json_string";
     public static final String KEY_CATEGORY = "books_category";
+
+    //public, so that we can access from another class.
+    public static final String KEY_BOOK_DATA = "BOOK_DATA";
 
     private static String mCategory = null;
 
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         mBooksRv.setLayoutManager(layoutManager);
         mBooksRv.setHasFixedSize(true);
 
-        mBooksAdapter = new BooksAdapter();
+        mBooksAdapter = new BooksAdapter(this);
         mBooksRv.setAdapter(mBooksAdapter);
 
         final String default_category = categoryHardcoverFiction;
@@ -329,5 +334,13 @@ public class MainActivity extends AppCompatActivity {
             mFirstVisibleItemPosition = savedInstanceState.getInt(ITEM_POSITION_EXTRA);
             //Log.d(TAG, "Position in onRestore method: " + mFirstVisibleItemPosition);
         }
+    }
+
+    @Override
+    public void onClick(Book book) {
+        // Start DetailActivity
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra(KEY_BOOK_DATA, book);
+        startActivity(intent);
     }
 }

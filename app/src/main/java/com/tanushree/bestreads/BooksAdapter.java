@@ -18,19 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BooksViewHolder>
 {
     private List<Book> mBookList;
-    //private final BooksAdapterOnClickHandler mClickHandler;
+    private final BooksAdapterOnClickHandler mClickHandler;
 
-    /*public BooksAdapter(BooksAdapterOnClickHandler clickHandler)
+    public BooksAdapter(BooksAdapterOnClickHandler clickHandler)
     {
         mClickHandler = clickHandler;
-    }*/
+    }
 
     // Inner Interface
 
-    /*public interface BooksAdapterOnClickHandler
+    public interface BooksAdapterOnClickHandler
     {
         void onClick(Book book);
-    }*/
+    }
 
     public void setBooksData(List<Book> bookList)
     {
@@ -102,7 +102,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BooksViewHol
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             Book book = mBookList.get(adapterPosition);
-            //mClickHandler.onClick(book);
+            mClickHandler.onClick(book);
         }
     }
 }
