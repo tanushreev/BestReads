@@ -9,4 +9,7 @@
     <string name="amazon_link_not_found">Amazon Link Not Found.</string>
     <string name="rating_not_found">Rating Not Found.</string>
 
+    <!--Content Descriptions-->
+    <string name="content_description_book_cover">Book cover</string>
+
 </resources>

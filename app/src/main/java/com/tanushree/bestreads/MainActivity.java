@@ -1,6 +1,8 @@
 package com.tanushree.bestreads;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,10 +34,33 @@ public class MainActivity extends AppCompatActivity {
 
     private static String mCategory = null;
 
+    private RecyclerView mBooksRv;
+    private BooksAdapter mBooksAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBooksRv = findViewById(R.id.rvBooks);
+
+        boolean landscape = getResources().getBoolean(R.bool.isLandscape);
+
+        int gridColumns;
+
+        if(landscape)
+            gridColumns = 3;
+        else
+            gridColumns = 2;
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, gridColumns,
+                GridLayoutManager.VERTICAL, false);
+
+        mBooksRv.setLayoutManager(layoutManager);
+        mBooksRv.setHasFixedSize(true);
+
+        mBooksAdapter = new BooksAdapter();
+        mBooksRv.setAdapter(mBooksAdapter);
 
         final String default_category = categoryHardcoverFiction;
 
@@ -68,15 +93,17 @@ public class MainActivity extends AppCompatActivity {
 
                     ArrayList<Book> bookList = response.body().getResults().getBooks();
 
-                        /*for (int i = 0; i < bookList.size(); i++) {
-                            Log.d(TAG, "onResponse: \n" +
-                                    "isbn: " + bookList.get(i).getIsbn() + "\n" +
-                                    "title: " + bookList.get(i).getTitle() + "\n" +
-                                    "author: " + bookList.get(i).getAuthor() + "\n" +
-                                    "rank: " + bookList.get(i).getRank() + "\n" +
-                                    "description: " + bookList.get(i).getDescription() + "\n" +
-                                    "--------------------------------------------------------\n\n");
+                    /*for (int i = 0; i < bookList.size(); i++) {
+                        Log.d(TAG, "onResponse: \n" +
+                                "isbn: " + bookList.get(i).getIsbn() + "\n" +
+                                "title: " + bookList.get(i).getTitle() + "\n" +
+                                "author: " + bookList.get(i).getAuthor() + "\n" +
+                                "rank: " + bookList.get(i).getRank() + "\n" +
+                                "description: " + bookList.get(i).getDescription() + "\n" +
+                                "--------------------------------------------------------\n\n");
                         }*/
+
+                    mBooksAdapter.setBooksData(bookList);
                 }
 
                 @Override
