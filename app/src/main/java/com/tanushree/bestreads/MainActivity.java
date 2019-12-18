@@ -1,5 +1,6 @@
 package com.tanushree.bestreads;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String BASE_URL = "https://api.nytimes.com/svc/books/v3/lists/";
     private static final String api_key = BuildConfig.NYTIMES_API_KEY;
+    private static final String ITEM_POSITION_EXTRA = "item_position";
 
     private static final String categoryHardcoverFiction = "hardcover-fiction";
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mBooksRv;
     private BooksAdapter mBooksAdapter;
+    // Persists the RecyclerView scroll position.
+    private int mFirstVisibleItemPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
                         }*/
 
                     mBooksAdapter.setBooksData(bookList);
+
+                    // Restore RecyclerView Scroll Position.
+                    // Note: Must be called AFTER the adapter data has been set.
+                    mBooksRv.getLayoutManager().scrollToPosition(mFirstVisibleItemPosition);
                 }
 
                 @Override
@@ -128,5 +136,31 @@ public class MainActivity extends AppCompatActivity {
 
         return (activeNetworkInfo != null && activeNetworkInfo.isConnected());
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Save the RecyclerView scroll position (& restore it in loadBooksData method).
+        mFirstVisibleItemPosition = ((GridLayoutManager)mBooksRv.getLayoutManager())
+                .findFirstVisibleItemPosition();
+
+        //Log.d(TAG, "Visible position: " + mFirstVisibleItemPosition);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ITEM_POSITION_EXTRA, mFirstVisibleItemPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState!=null) {
+            mFirstVisibleItemPosition = savedInstanceState.getInt(ITEM_POSITION_EXTRA);
+            //Log.d(TAG, "Position in onRestore method: " + mFirstVisibleItemPosition);
+        }
     }
 }
