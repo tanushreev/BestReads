@@ -24,4 +24,10 @@
     <string name="main_menu_children_books">Children’s Picture Books</string>
     <string name="main_menu_wish_list">Wish List</string>
 
+    <!--Detail Activity-->
+    <string name="detail_activity_title">Book Details</string>
+    <string name="detail_add_wishlist_button_text">Add to Wish list</string>
+    <string name="detail_remove_wishlist_button_text">Remove from Wish list</string>
+    <string name="detail_amazon_button_text">Open in Amazon</string>
+
 </resources>
