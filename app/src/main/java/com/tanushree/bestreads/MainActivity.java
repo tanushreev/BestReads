@@ -2,6 +2,8 @@ package com.tanushree.bestreads;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
@@ -22,11 +24,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.tanushree.bestreads.BooksAdapter.BooksAdapterOnClickHandler;
+import com.tanushree.bestreads.model.AppDatabase;
 import com.tanushree.bestreads.model.Book;
 import com.tanushree.bestreads.model.JSONData;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BooksAdapterOnClickHandler {
 
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
     // Persists the RecyclerView scroll position.
     private int mFirstVisibleItemPosition;
 
+    private AppDatabase mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
         mBooksAdapter = new BooksAdapter(this);
         mBooksRv.setAdapter(mBooksAdapter);
 
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
+
         final String default_category = categoryHardcoverFiction;
 
         if (mCategory == null)
@@ -99,6 +108,20 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
 
         if (mCategory.equals(categoryWishList)) {
 
+            MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+            // Observing the LiveData object i.e. bookList
+            viewModel.getBookList().observe(this, new Observer<List<Book>>() {
+                @Override
+                public void onChanged(List<Book> books) {
+                    //Log.d(TAG, "Updating list of books from LiveData in ViewModel");
+
+                    // This if statement is important, otherwise the adapter data was getting
+                    // refreshed, even when other categories are needed to be displayed.
+                    if(mCategory.equals(categoryWishList)) {
+                        mBooksAdapter.setBooksData(books);
+                    }
+                }
+            });
         }
 
         else {

@@ -2,16 +2,22 @@ package com.tanushree.bestreads;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.tanushree.bestreads.model.AppDatabase;
+import com.tanushree.bestreads.model.AppExecutors;
 import com.tanushree.bestreads.model.Book;
 
 public class DetailActivity extends AppCompatActivity {
@@ -28,6 +34,10 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mDescriptionTv;
     private Button mAmazonButton;
     private Toolbar mToolbar;
+
+    // Member variable for the database.
+    private AppDatabase mDatabase;
+    private boolean mWishlistFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +58,8 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mDatabase = AppDatabase.getInstance(getApplicationContext());
+
         Intent intentThatStartedThisActivity = getIntent();
 
         if(intentThatStartedThisActivity!=null) {
@@ -57,6 +69,75 @@ public class DetailActivity extends AppCompatActivity {
                 setTitle(R.string.detail_activity_title);
 
                 populateUI();
+
+                final String bookIsbn = mBook.getIsbn();
+
+                // Create an instance of ViewModelFactory.
+                DetailViewModelFactory factory = new DetailViewModelFactory(mDatabase, bookIsbn);
+                // Create the ViewModel.
+                final DetailViewModel viewModel =
+                        ViewModelProviders.of(this, factory).get(DetailViewModel.class);
+
+                viewModel.getBook().observe(this, new Observer<Book>() {
+                    @Override
+                    public void onChanged(Book book) {
+                        //Log.d(TAG, "Receiving database update from LiveData");
+                        // If the book is found in the database table.
+                        if(book!=null)
+                        {
+                            mWishlistFlag = true;
+                            mWishListButton.setText(R.string.detail_remove_wishlist_button_text);
+                        }
+                    }
+                });
+
+                mAmazonButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(mBook.getAmazonUrl().equals(""))
+                            Toast.makeText(DetailActivity.this, R.string.amazon_link_not_found, Toast.LENGTH_SHORT).show();
+                        else {
+                            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mBook.getAmazonUrl()));
+                            startActivity(webIntent);
+                        }
+                    }
+                });
+
+                mWishListButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if(mWishlistFlag == false)
+                        {
+                            // Insert in the database table.
+                            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDatabase.bookDao().insertBook(mBook);
+                                }
+                            });
+                            mWishlistFlag = true;
+                            Toast.makeText(DetailActivity.this, R.string.added_to_wish_list, Toast.LENGTH_LONG).show();
+
+                            mWishListButton.setText(R.string.detail_remove_wishlist_button_text);
+                        }
+
+                        else
+                        {
+                            // Delete from the database table.
+                            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDatabase.bookDao().deleteBook(mBook);
+                                }
+                            });
+                            mWishlistFlag = false;
+                            Toast.makeText(DetailActivity.this, R.string.removed_from_wish_list,Toast.LENGTH_LONG).show();
+
+                            mWishListButton.setText(R.string.detail_add_wishlist_button_text);
+                        }
+                    }
+                });
             }
         }
 
