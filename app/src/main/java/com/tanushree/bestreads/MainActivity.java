@@ -12,6 +12,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,6 +31,7 @@ import com.tanushree.bestreads.BooksAdapter.BooksAdapterOnClickHandler;
 import com.tanushree.bestreads.model.AppDatabase;
 import com.tanushree.bestreads.model.Book;
 import com.tanushree.bestreads.model.JSONData;
+import com.tanushree.bestreads.widget.BooksWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -374,5 +377,19 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra(KEY_BOOK_DATA, book);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Update the app widget.
+
+        Intent intentUpdateWidget = new Intent(this, BooksWidgetProvider.class);
+        intentUpdateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids =  AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), BooksWidgetProvider.class));
+        intentUpdateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intentUpdateWidget);
     }
 }
