@@ -126,6 +126,10 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
                     // refreshed, even when other categories are needed to be displayed.
                     if(mCategory.equals(categoryWishList)) {
                         mBooksAdapter.setBooksData(books);
+                        String booksJsonString = new Gson().toJson(books);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString(KEY_JSON, booksJsonString);
+                        editor.apply();
                     }
                 }
             });
