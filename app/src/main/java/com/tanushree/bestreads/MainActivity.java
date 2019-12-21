@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
     private static final String categoryChildrenBooks = "picture-books";
     private static final String categoryWishList = "wish-list";
 
+    public static final String MY_PREFERENCES = "MyPrefs";
     public static final String KEY_JSON = "json_string";
     public static final String KEY_CATEGORY = "books_category";
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
     private int mFirstVisibleItemPosition;
 
     private AppDatabase mDatabase;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
         mBooksRv.setAdapter(mBooksAdapter);
 
         mDatabase = AppDatabase.getInstance(getApplicationContext());
+
+        mSharedPreferences = getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
 
         final String default_category = categoryHardcoverFiction;
 
@@ -155,6 +159,11 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
                                 "--------------------------------------------------------\n\n");
                         }*/
 
+                        String booksJsonString = new Gson().toJson(bookList);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString(KEY_JSON, booksJsonString);
+                        editor.apply();
+
                         mBooksAdapter.setBooksData(bookList);
 
                         // Restore RecyclerView Scroll Position.
@@ -179,64 +188,64 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
     private void setTheTitle ()
     {
         //Log.d (TAG, "setTheTitle called");
-        //SharedPreferences.Editor editor = mSharedPreferences.edit();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
         switch(mCategory)
         {
             case categoryHardcoverFiction:
                 setTitle(R.string.main_menu_hardcover_fiction);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_fiction));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_fiction));
                 break;
 
             case categoryPaperbackFiction:
                 setTitle(R.string.main_menu_paperback_fiction);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_fiction));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_fiction));
                 break;
 
             case categoryHardcoverNonfiction:
                 setTitle(R.string.main_menu_hardcover_nonfiction);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_nonfiction));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_nonfiction));
                 break;
 
             case categoryPaperbackNonfiction:
                 setTitle(R.string.main_menu_paperback_nonfiction);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_nonfiction));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_nonfiction));
                 break;
 
             case categoryHardcoverAdvice:
                 setTitle(R.string.main_menu_hardcover_advice);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_advice));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_hardcover_advice));
                 break;
 
             case categoryPaperbackAdvice:
                 setTitle(R.string.main_menu_paperback_advice);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_advice));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_paperback_advice));
                 break;
 
             case categoryBusiness:
                 setTitle(R.string.main_menu_business);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_business));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_business));
                 break;
 
             case categoryScience:
                 setTitle(R.string.main_menu_science);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_science));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_science));
                 break;
 
             case categoryChildrenBooks:
                 setTitle(R.string.main_menu_children_books);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_children_books));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_children_books));
                 break;
 
             case categoryWishList:
                 setTitle(R.string.main_menu_wish_list);
-                //editor.putString(KEY_CATEGORY, getString(R.string.main_menu_wish_list));
+                editor.putString(KEY_CATEGORY, getString(R.string.main_menu_wish_list));
                 break;
 
             default:
                 setTitle("Best Reads");
-                //editor.putString(KEY_CATEGORY, getString(R.string.app_name));
+                editor.putString(KEY_CATEGORY, getString(R.string.app_name));
         }
-        //editor.apply();
+        editor.apply();
     }
 
     @Override
