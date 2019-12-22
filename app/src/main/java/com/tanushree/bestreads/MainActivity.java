@@ -26,6 +26,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics.Event;
+import com.google.firebase.analytics.FirebaseAnalytics.Param;
 import com.google.gson.Gson;
 import com.tanushree.bestreads.BooksAdapter.BooksAdapterOnClickHandler;
 import com.tanushree.bestreads.model.AppDatabase;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
 
     private AppDatabase mDatabase;
     private SharedPreferences mSharedPreferences;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
         mDatabase = AppDatabase.getInstance(getApplicationContext());
 
         mSharedPreferences = getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         final String default_category = categoryHardcoverFiction;
 
@@ -377,6 +384,12 @@ public class MainActivity extends AppCompatActivity implements BooksAdapterOnCli
 
     @Override
     public void onClick(Book book) {
+
+        // Log event
+        Bundle bundle = new Bundle();
+        bundle.putString(Param.ITEM_NAME, book.getTitle());
+        mFirebaseAnalytics.logEvent(Event.VIEW_ITEM, bundle);
+
         // Start DetailActivity
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra(KEY_BOOK_DATA, book);
