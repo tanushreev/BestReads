@@ -30,11 +30,13 @@
     <string name="detail_remove_wishlist_button_text">Remove from Wish list</string>
     <string name="detail_amazon_button_text">Open in Amazon</string>
 
+    <!--Detail menu-->
+    <string name="detail_menu_share">Share</string>
+
     <!--Toast Messages Informative-->
     <string name="added_to_wish_list">Book added to wish list.</string>
     <string name="removed_from_wish_list">Book deleted from wish list.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-
 
 </resources>
