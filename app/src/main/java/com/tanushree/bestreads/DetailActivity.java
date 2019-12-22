@@ -6,8 +6,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +33,16 @@ import com.tanushree.bestreads.model.AppDatabase;
 import com.tanushree.bestreads.model.AppExecutors;
 import com.tanushree.bestreads.model.Book;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URL;
+
 public class DetailActivity extends AppCompatActivity {
+
+    //private static final String TAG = DetailActivity.class.getSimpleName();
+    private static final String KEY_BOOKS = "books";
+    private static final String KEY_RATING = "average_rating";
 
     private Book mBook;
 
@@ -156,6 +169,14 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+                if (isNetworkAvailable()) {
+                    new FetchRatingTask().execute(mBook.getIsbn());
+                }
+                else {
+                    Toast.makeText
+                            (this, R.string.network_unavailable_message, Toast.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -216,6 +237,66 @@ public class DetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class FetchRatingTask extends AsyncTask<String, Void, Double>
+    {
+        @Override
+        protected Double doInBackground(String... strings) {
+
+            String isbn = strings[0];
+
+            URL ratingRequestUrl = NetworkUtils.buildUrl(isbn);
+
+            try {
+                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(ratingRequestUrl);
+                if(jsonResponse!=null) {
+                    JSONObject rootJsonObject = new JSONObject(jsonResponse);
+                    JSONArray books = rootJsonObject.getJSONArray(KEY_BOOKS);
+                    JSONObject bookReviewCounts = books.getJSONObject(0);
+                    Double rating = bookReviewCounts.getDouble(KEY_RATING);
+                    //Log.v(TAG, jsonResponse);
+                    //Log.d(TAG, "Rating: " + rating);
+                    return rating;
+                }
+                else
+                {
+                    Toast.makeText(DetailActivity.this, R.string.no_response_from_server,
+                            Toast.LENGTH_LONG).show();
+                    return null;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Double rating) {
+            super.onPostExecute(rating);
+            if (rating != null) {
+                String ratingString = "Rating: " + rating + "/5 on Goodreads";
+                mRatingTv.setText(ratingString);
+            }
+            else {
+                mRatingTv.setVisibility(View.GONE);
+                Toast.makeText(DetailActivity.this, R.string.rating_not_found,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    private boolean isNetworkAvailable()
+    {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return (activeNetworkInfo != null && activeNetworkInfo.isConnected());
+
     }
 
 }
